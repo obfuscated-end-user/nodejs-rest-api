@@ -140,4 +140,6 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
 
+# your additions
 ignore/
+nodemon.json
