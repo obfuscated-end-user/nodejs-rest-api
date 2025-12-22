@@ -11,6 +11,8 @@ const orderRoutes = require("./api/routes/orders");
 mongoose.connect(
 	`mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@api001.sfqykhd.mongodb.net/?appName=API001`
 );
+// omits warnings?
+mongoose.Promise = global.Promise;
 /*
 // this bit doesn't work for me
 // update: deprecated, don't use
