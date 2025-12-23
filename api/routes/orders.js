@@ -11,6 +11,10 @@ router.get("/", (req, res, next) => {	// matches GET /orders
 	Order.find()
 		// https://stackoverflow.com/questions/15480934/why-is-there-an-underscore-in-front-of-the-mongodb-document-id
 		.select("product quantity _id")
+		// instead of getting the foreign key of that product, put the product itself here instead and show its relevant data
+		// "name" refers to only show name field, but you can call this as just populate("product") and it will show all fields related to product
+		// separate the fields with a space to show those fields as in populate("product", "name price")
+		.populate("product", "name")
 		.exec()
 		.then(docs => {
 			// 200 is a request succeeded
@@ -83,6 +87,7 @@ router.post("/", (req, res, next) => {	// matches POST /orders
 
 router.get("/:orderId", (req, res, next) => {	// matches /orders/id (anything)
 	Order.findById(req.params.orderId)	// :orderId becomes req.params.orderId
+		.populate("product")
 		.exec()
 		.then(order => {
 			// avoid getting `null`
