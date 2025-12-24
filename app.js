@@ -6,6 +6,7 @@ const mongoose = require("mongoose");
 // your routes
 const productRoutes = require("./api/routes/products");
 const orderRoutes = require("./api/routes/orders");
+const userRoutes = require("./api/routes/user");
 
 // connects to MongoDB Atlas (cloud database)
 mongoose.connect(
@@ -39,6 +40,7 @@ app.use(bodyParser.json());
 // routes which should handle requests
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
+app.use("/user", userRoutes);
 
 /*
 buzzwords ahead but who cares
