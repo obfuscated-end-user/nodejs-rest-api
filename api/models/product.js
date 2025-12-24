@@ -10,6 +10,10 @@ const productSchema = mongoose.Schema({		// define schema (data rules)
 	price: {
 		type: Number,	// price (number)
 		required: true
+	},
+	productImage: {		// image URL
+		type: String,
+		required: true
 	}
 });
 

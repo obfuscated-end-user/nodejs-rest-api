@@ -28,6 +28,11 @@ const app = express();
 // cycle
 // morgan - logs requests (like "GET /products 200 2.3ms") etc
 app.use(morgan("dev"));
+// make this folder publicly available
+// http://localhost:3000/uploads/file.ext
+// if "/uploads" is removed from app.use(), then the URL will be
+// http://localhost:3000/file.ext
+app.use("/uploads", express.static("uploads"));
 // bodyParser - parses JSON/form data from requests
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
@@ -45,7 +50,7 @@ the server explicitly allows them.
 app.use((req, res, next) => {
 	// allow any domain to make requests to this API
 	res.header("Access-Control-Allow-Origin", "*");
-	// tells the browser whcih HTTP headers are allowed to be sent in
+	// tells the browser which HTTP headers are allowed to be sent in
 	// cross-origin requests to this API
 	res.header(
 		"Access-Control-Allow-Headers",
@@ -63,14 +68,14 @@ app.use((req, res, next) => {
 		return res.status(200).json({})
 	}
 	// pass control to the next middleware or route handler in the stack
-	// if you remove this like you did before, the request will hand and never
+	// if you remove this like you did before, the request will hang and never
 	// be completed, because Express will wait for a response or further
 	// instructions
 	next();
 });
 
 /*
-This middlware runs if no previous route like `/products` or `/orders` matched
+This middleware runs if no previous route like `/products` or `/orders` matched
 the incoming request, meaning the requested endpoint doesn't exist.
 It creates a new error object, then passes this error to the next middleware
 using `next(error);`.

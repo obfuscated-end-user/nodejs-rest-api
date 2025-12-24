@@ -70,7 +70,7 @@ router.post("/", (req, res, next) => {	// matches POST /orders
 					quantity: result.quantity
 				},
 				// https://en.wikipedia.org/wiki/HATEOAS
-				// "GET this specific URL to view view the order you just created"
+				// "GET this specific URL to view the order you just created"
 				request: {
 					type: "GET",
 					url: `http://localhost:3000/orders/${result._id}`
@@ -123,7 +123,7 @@ router.delete("/:orderId", (req, res, next) => {
 				request: {
 					type: "POST",	// now suggest the user to create a new order
 					url: "http://localhost:3000/orders/",	// by using this URL
-					body: {		// shows the format that they need to follow
+					body: {		// shows the format they need to follow
 						productId: "ID",
 						quantity: "Number"
 					}
