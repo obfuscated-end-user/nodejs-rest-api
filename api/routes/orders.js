@@ -2,12 +2,13 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 
+const checkAuth = require("../middleware/check-auth");
 const Order = require("../models/order");
 const Product = require("../models/product");
 
 // mongoose.Schema.find().exec().then().catch() is a common pattern you will see
 // https://mongoosejs.com/docs/api/query.html
-router.get("/", (req, res, next) => {	// matches GET /orders
+router.get("/", checkAuth, (req, res, next) => {	// matches GET /orders
 	Order.find()
 		// https://stackoverflow.com/questions/15480934/why-is-there-an-underscore-in-front-of-the-mongodb-document-id
 		.select("product quantity _id")
@@ -41,7 +42,7 @@ router.get("/", (req, res, next) => {	// matches GET /orders
 		});
 });
 
-router.post("/", (req, res, next) => {	// matches POST /orders
+router.post("/", checkAuth, (req, res, next) => {	// matches POST /orders
 	Product.findById(req.body.productId)
 		.then(product => {
 			if (!product) {	// if product doesn't exist
@@ -85,7 +86,7 @@ router.post("/", (req, res, next) => {	// matches POST /orders
 		});
 });
 
-router.get("/:orderId", (req, res, next) => {	// matches /orders/id (anything)
+router.get("/:orderId", checkAuth, (req, res, next) => {	// matches /orders/id (anything)
 	Order.findById(req.params.orderId)	// :orderId becomes req.params.orderId
 		.populate("product")
 		.exec()
@@ -113,7 +114,7 @@ router.get("/:orderId", (req, res, next) => {	// matches /orders/id (anything)
 });
 
 // matches DELETE /orders/id (could be anything)
-router.delete("/:orderId", (req, res, next) => {
+router.delete("/:orderId", checkAuth, (req, res, next) => {
 	// DO NOT USE remove()
 	Order.deleteOne({ _id: req.params.orderId })
 		.exec()

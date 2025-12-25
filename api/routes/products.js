@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
 const multer = require("multer");
+const checkAuth = require("../middleware/check-auth");
 
 // can't find docs on this one
 // https://expressjs.com/en/resources/middleware/multer.html
@@ -78,7 +79,7 @@ router.get("/", (req, res, next) => {	// matches GET /products
 		});
 });
 
-router.post("/", upload.single("productImage"),(req, res, next) => {		// matches POST /products
+router.post("/", checkAuth, upload.single("productImage"), (req, res, next) => {		// matches POST /products
 	const product = new Product({			// create a new product object
 		_id: new mongoose.Types.ObjectId(),	// auto-generate unique ID
 		name: req.body.name,				// from request: {"name": "test"}
@@ -139,7 +140,7 @@ router.get("/:productId", (req, res, next) => {	// matches GET /products/id
 		});
 });
 
-router.patch("/:productId", (req, res, next) => {	// matches PATCH /products/
+router.patch("/:productId", checkAuth, (req, res, next) => {	// matches PATCH /products/
 	// productId has to be the same name as above
 	const id = req.params.productId;			// grab ID from URL
 	// build update object
@@ -173,7 +174,7 @@ router.patch("/:productId", (req, res, next) => {	// matches PATCH /products/
 		});
 });
 
-router.delete("/:productId", (req, res, next) => {	// matches DELETE /products/
+router.delete("/:productId", checkAuth, (req, res, next) => {	// matches DELETE /products/
 	const id = req.params.productId;		// grab ID from URL
 	// Product.remove() is deprecated and guy in comments suggested this instead
 	Product.deleteOne({ _id: id })			// MongoDB "delete where _id = id"
