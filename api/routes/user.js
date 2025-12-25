@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const User = require("../models/user");
 
@@ -50,6 +51,52 @@ router.post("/signup", (req, res, next) => {
 				});
 			}
 		})
+});
+
+router.post("/login", (req, res, next) => {
+	// Mongoose find() always returns an array
+	User.find({ email: req.body.email })
+		.exec()
+		.then(user => {
+			// if email isn't found, user array has nothing in it
+			if (user.length < 1) {
+				return res.status(401).json({
+					message: "Auth failed"
+				});
+			}
+			// get plaintext user password from requests body and compare it to the hashed password from the database
+			// user[0] because find() returns array (first match)
+			bcrypt.compare(req.body.password, user[0].password, (err, result) => {
+				if (err) {
+					return res.status(401).json({
+						message: "Auth failed"
+					});
+				}
+				if (result) {
+					// create jwt with payload, generate token only on success
+					// https://jwt.io - paste the token there to decode it
+					const token = jwt.sign({
+						email: user[0].email,
+						userId: user[0]._id
+					}, process.env.JWT_KEY, {	// signed with this secret key
+						expiresIn: "1h"			// expires in 1 hour
+					});
+					return res.status(200).json({
+						message: "Auth successful",
+						token: token			// show this to the user
+					})
+				}
+				res.status(401).json({
+					message: "Auth failed"
+				});
+			});
+		})
+		.catch(err => {
+			console.log(err);
+			res.status(500).json({
+				error: err
+			});
+		});
 });
 
 // 694b683f059970879b71002a
