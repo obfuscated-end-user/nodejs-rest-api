@@ -5,7 +5,8 @@ const orderSchema = mongoose.Schema({		// define schema (data rules)
 	_id: mongoose.Schema.Types.ObjectId,	// unique ID (auto-generated)
 	product: {
 		type: mongoose.Schema.Types.ObjectId,	// product name (text)
-		// the name of the model i want to connect this model to, it has to be the exact same (view product.js)
+		// the name of the model i want to connect this model to,
+		// it has to be the exact same (view product.js)
 		// "i want to connect this schema with `Product`"
 		ref: "Product",
 		required: true	// make this required
