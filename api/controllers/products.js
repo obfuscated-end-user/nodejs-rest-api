@@ -101,13 +101,15 @@ exports.products_update_product = (req, res, next) => {
 	for (const ops of req.body) {				// loop through request body
 		updateOps[ops.propName] = ops.value;	// build: {name: "new name"}
 	}
-	// update() is deprecated
-	// https://www.mongodb.com/docs/manual/reference/method/db.collection.updateone/
-	// https://www.mongodb.com/docs/manual/reference/operator/update/set/
-	// basically, $set tells MongoDB(?) to update only the fields specified in
-	// the passed object (updateOps)
-	// if i did `Product.updateOne({ _id: id }, updateOps)`, i will replace the
-	// ENTIRE object instead of patching it
+	/**
+	 * `update()` is deprecated
+	 * https://www.mongodb.com/docs/manual/reference/method/db.collection.updateone/
+	 * https://www.mongodb.com/docs/manual/reference/operator/update/set/
+	 * Basically, `$set` tells MongoDB(?) to update only the fields specified in
+	 * the passed object (`updateOps`).
+	 * If I did `Product.updateOne({ _id: id }, updateOps)`, I will replace the
+	 * ENTIRE object instead of patching it.
+	 */
 	Product.updateOne({ _id: id }, { $set: updateOps })	// MongoDB update
 		.exec()
 		.then(result => {

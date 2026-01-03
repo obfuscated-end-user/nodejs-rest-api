@@ -8,23 +8,29 @@ exports.user_signup = (req, res, next) => {
 	User.find({ email: req.body.email })
 		.exec()
 		.then(user => {
-			// this could've been phrased better but who cares
-			// when you query find() and try checking `user`, it will be an
-			// empty array if you don't find entries and that, for some reason
-			// isn't null
-			// so we check its length instead, if there is at least 1, then it
-			// means that at least 1 user is already using this email and
-			// therefore don't proceed any further
+			/**
+			 * This could've been phrased better, but who cares.
+			 * When you query `find()` and try checking `user`, it will be an
+			 * empty array if you don't find entriesm and that, for some reason
+			 * isn't null. Is this a JavaScript thing?
+			 * So we check its length instead, if there is at least 1, then it
+			 * means that at least 1 user is already using this email and
+			 * therefore, don't proceed any further.
+			 */
 			if (user.length >= 1) {
-				// https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/409
-				// https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/422
+				/**
+				 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/409
+				 * https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/422
+				 */
 				return res.status(409).json({
 					message: "Email exists"
 				});
 			} else {
-				// https://github.com/kelektiv/node.bcrypt.js
-				// https://en.wikipedia.org/wiki/Salt_(cryptography)
-				// 10 salting rounds
+				/**
+				 * https://github.com/kelektiv/node.bcrypt.js
+				 * https://en.wikipedia.org/wiki/Salt_(cryptography)
+				 * 10 salting rounds
+				 */
 				bcrypt.hash(req.body.password, 10, (err, hash) => {
 					if (err) {	// and do this if password fails
 						return res.status(500).json({
@@ -66,9 +72,11 @@ exports.user_login = (req, res, next) => {
 					message: "Auth failed"
 				});
 			}
-			// get plaintext user password from requests body and compare it
-			// to the hashed password from the database
-			// user[0] because find() returns array (first match)
+			/**
+			 * Get plaintext user password from requests body and compare it
+			 * to the hashed password from the database.
+			 * `user[0]` because `find()` returns an array (first match).
+			 */
 			bcrypt.compare(
 				req.body.password, user[0].password, (err, result) => {
 				if (err) {
@@ -77,8 +85,10 @@ exports.user_login = (req, res, next) => {
 					});
 				}
 				if (result) {
-					// create jwt with payload, generate token only on success
-					// https://jwt.io - paste the token there to "decode" it
+					/**
+					 * Create JWT with payload, generate token only on success.
+					 * https://jwt.io - paste the token there to "decode" it
+					 */
 					const token = jwt.sign({
 						email: user[0].email,
 						userId: user[0]._id

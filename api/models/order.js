@@ -7,8 +7,8 @@ const orderSchema = mongoose.Schema({		// define schema (data rules)
 		type: mongoose.Schema.Types.ObjectId,	// product name (text)
 		/**
 		 * The name of the model i want to connect this model to, it has to be
-		 * the exact same (see api/models/product.js)
-		 * "i want to connect this schema with `Product`"
+		 * the exact same (see api/models/product.js).
+		 * "I want to connect this Schema with `Product`"
 		 */
 		ref: "Product",
 		required: true	// make this required

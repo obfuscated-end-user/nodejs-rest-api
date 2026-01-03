@@ -1,32 +1,39 @@
 const Order = require("../models/order");
 const Product = require("../models/product");
 const mongoose = require("mongoose");
-// 694a5375aacc02231c9a9a77
+
 exports.orders_get_all = (req, res, next) => {
+	/**
+	 * mongoose.Schema.find().exec().then().catch() is a common pattern here
+ 	 * https://mongoosejs.com/docs/api/query.html
+	 */
 	Order.find()
 		// https://stackoverflow.com/questions/15480934/why-is-there-an-underscore-in-front-of-the-mongodb-document-id
 		.select("product quantity _id")
-		// instead of getting the foreign key of that product, put the product
-		// itself here instead and show its relevant data
-
-		// "name" refers to only show name field, but you can call this as just
-		// populate("product") and it will show all fields related to product
-
-		// separate the fields with a space to show those fields as in
-		// `populate("product", "name price")`
+		/**
+		 * Instead of getting the foreign key of that product, put the product
+		 * itself here instead and show its relevant data.
+		 * `name` refers to only show name field, but you can call this as just
+		 * `populate("product")` and it will show all fields related to product.
+		 * Separate the fields with a space to show those fields as in
+		 * `populate("product", "name price")`.
+		 */
 		.populate("product", "name")
 		.exec()
 		.then(docs => {
-			// 200 is a request succeeded
+			// 200 is a request succeeded.
 			res.status(200).json({
-				count: docs.length,	// you know, like, "3"
-				// so this returns a list, array, whatever it's called
-				orders: docs.map(doc => {	// transform each individual MongoDB document
+				count: docs.length,	// You know, like, "3".
+				/**
+				 * So this returns a list, array, whatever it's called.
+				 * `map()` transforms each individual MongoDB document (`doc`).
+				 */
+				orders: docs.map(doc => {
 					return {
 						_id: doc._id,
 						product: doc.product,
 						quantity: doc.quantity,
-						request: {	// add navigation link, HATEOAS
+						request: {	// Add navigation link (HATEOAS).
 							type: "GET",
 							url: `http://localhost:3000/orders/${doc._id}`
 						}
@@ -49,20 +56,22 @@ exports.orders_create_order = (req, res, next) => {
 					message: "Product not found"
 				});
 			}
-			// create a new Order instance
+			// Create a new `Order` instance.
 			const order = new Order({
-				// you need the `new` keyword here (not in the video)
+				// You need the `new` keyword here. (not in the video)
 				_id: new mongoose.Types.ObjectId(),	// generate unique MongoDB ID
 				quantity: req.body.quantity,		// from request (e.g. 3)
 				product: req.body.productId			// reference an existing Product's ID
 			});
-			// persist to database, returns Promise
-			return order.save()	// chains to next then()
+			// Persist to database, returns `Promise`.
+			return order.save()	// Chains to next `then()`.
 		})
-		.then(result => {	// result - saved order document
+		.then(result => {	// `result` is a saved order document.
 			console.log(result);
-			// 201 indicates that the HTTP request has led to the creation
-			// of a resource
+			/**
+			 * 201 indicates that the HTTP request has led to the creation
+			 * of a resource.
+			 */
 			res.status(201).json({
 				message: "Order stored",
 				createdOrder: {
@@ -70,8 +79,10 @@ exports.orders_create_order = (req, res, next) => {
 					product: result.product,
 					quantity: result.quantity
 				},
-				// https://en.wikipedia.org/wiki/HATEOAS
-				// "GET this specific URL to view the order you just created"
+				/**
+				 * https://en.wikipedia.org/wiki/HATEOAS
+				 * "GET this specific URL to view the order you just created"
+				 */
 				request: {
 					type: "GET",
 					url: `http://localhost:3000/orders/${result._id}`
