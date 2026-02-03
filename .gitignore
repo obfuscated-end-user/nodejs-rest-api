@@ -144,3 +144,5 @@ vite.config.ts.timestamp-*
 ignore/
 nodemon.json
 uploads/
+
+auth.txt
